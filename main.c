@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void callback(unsigned char *user, const struct pcap_pkthdr *pkthdr,
+             const unsigned char *packetd_ptr)
+{
+    printf("Packet Received!\n\n");
+}
+
 int main(int argc, char const *argv[])
 {
     pcap_if_t *alldevs;
@@ -24,9 +30,25 @@ int main(int argc, char const *argv[])
     {
         printf("Device Name: %s\n", dev->name);
         if (dev->description)
-            printf("Description: %s\n\n", dev->description);
+            printf("Description: %s\n", dev->description);
         else 
-            printf("Description: No description available\n\n");
+            printf("Description: No description available\n");
+
+        int pckts_cnt = 1;
+
+        pcap_t *capdev = pcap_open_live(dev->name, BUFSIZ, 0, -1, err_buff);
+
+        if (capdev == NULL)
+        {
+            printf("ERR: pcap_open_live() %s\n", err_buff);
+            exit(1);
+        }
+
+        if (pcap_loop(capdev, pckts_cnt, callback, (unsigned char *)NULL))
+        {
+            printf("ERR: pcap_loop() failed!\n");
+            exit(1);
+        }
     }
 
     pcap_freealldevs(alldevs);
