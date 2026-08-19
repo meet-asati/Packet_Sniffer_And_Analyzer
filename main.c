@@ -23,6 +23,19 @@ void callback(unsigned char *user, const struct pcap_pkthdr *pkthdr,
     else if (packet[12] == 0x86 && packet[13] == 0xDD)
         printf("(IPv6)");
     printf("\n");
+
+    printf("Src IP: %02x %02x %02x %02x\n", packet[26], packet[27], packet[28], packet[29]);
+    printf("Dest IP: %02x %02x %02x %02x\n", packet[30], packet[31], packet[32], packet[33]);
+    printf("Protocol: ");
+    if(packet[23] == 0x11) 
+        printf("UDP");
+    else if (packet[23] == 0x06)
+        printf("TCP");
+    printf("\n");
+
+    int header_length = (packet[14] & 0x0F) * 4;
+
+    printf("IP Header Length: %d bytes\n", header_length);
 }
 
 int main(int argc, char const *argv[])
@@ -45,7 +58,7 @@ int main(int argc, char const *argv[])
 
     for (dev = alldevs; dev != NULL; dev = dev->next)
     {
-        printf("Device Name: %s\n", dev->name);
+        printf("\nDevice Name: %s\n", dev->name);
         if (dev->description)
             printf("Description: %s\n", dev->description);
         else
