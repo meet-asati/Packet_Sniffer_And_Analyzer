@@ -12,6 +12,17 @@ void callback(unsigned char *user, const struct pcap_pkthdr *pkthdr,
         printf("%02x ", packet[i]);
     }
     printf("\n");
+
+    printf("Src MAC: %02x %02x %02x %02x %02x %02x\n", packet[6], packet[7], packet[8], packet[9], packet[10], packet[11]);
+
+    printf("Dest MAC: %02x %02x %02x %02x %02x %02x\n", packet[0], packet[1], packet[2], packet[3], packet[4], packet[5]);
+
+    printf("EtherType: %02x %02x ", packet[12], packet[13]);
+    if (packet[12] == 0x08 && packet[13] == 0x00)
+        printf("(IPv4)");
+    else if (packet[12] == 0x86 && packet[13] == 0xDD)
+        printf("(IPv6)");
+    printf("\n");
 }
 
 int main(int argc, char const *argv[])
