@@ -3,9 +3,15 @@
 #include <stdlib.h>
 
 void callback(unsigned char *user, const struct pcap_pkthdr *pkthdr,
-             const unsigned char *packetd_ptr)
+              const unsigned char *packet)
 {
-    printf("Packet Received!\n\n");
+    int len = pkthdr->len;
+
+    for (int i = 0; i < len; i++)
+    {
+        printf("%02x ", packet[i]);
+    }
+    printf("\n");
 }
 
 int main(int argc, char const *argv[])
@@ -31,7 +37,7 @@ int main(int argc, char const *argv[])
         printf("Device Name: %s\n", dev->name);
         if (dev->description)
             printf("Description: %s\n", dev->description);
-        else 
+        else
             printf("Description: No description available\n");
 
         int pckts_cnt = 1;
